@@ -1569,6 +1569,8 @@ Generic_GCC::GCCVersion Generic_GCC::GCCVersion::Parse(StringRef VersionText) {
 }
 
 static llvm::StringRef getGCCToolchainDir(const ArgList &Args) {
+  if (const char *S = ::getenv("COMPILER_RUNTIME_OBJECTS"))
+    return StringRef(S);
   const Arg *A = Args.getLastArg(clang::driver::options::OPT_gcc_toolchain);
   if (A)
     return A->getValue();
