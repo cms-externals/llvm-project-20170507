@@ -5776,6 +5776,37 @@ static void handleOpenCLAccessAttr(Sema &S, Decl *D,
       AL.getRange(), S.Context, AL.getAttributeSpellingListIndex()));
 }
 
+static void handleCMSThreadSafeAttr(Sema &S, Decl *D, const AttributeList &Attr) {
+
+    assert(!Attr.isInvalid());
+
+    if (!(isa<Decl>(D))) {
+      S.Diag(Attr.getLoc(), diag::warn_attribute_wrong_decl_type)
+        << Attr.getName();
+      return;
+    }
+
+    D->addAttr( ::new (S.Context) CMSThreadSafeAttr(Attr.getRange(), S.Context,
+						Attr.getAttributeSpellingListIndex()));
+}
+
+static void handleCMSThreadGuardAttr(Sema &S, Decl *D, const AttributeList &Attr) {
+    assert(!Attr.isInvalid());
+
+    if (!(isa<Decl>(D) ))  {
+      S.Diag(Attr.getLoc(), diag::warn_attribute_wrong_decl_type)
+        << Attr.getName() << ExpectedVariableOrFunction;
+      return;
+    }
+    StringRef Str;
+    if (!S.checkStringLiteralArgumentAttr(Attr, 0, Str))
+      return;
+
+  D->addAttr(::new (S.Context) CMSThreadGuardAttr(Attr.getRange(), S.Context, Str,
+                                         Attr.getAttributeSpellingListIndex()));
+
+}
+
 //===----------------------------------------------------------------------===//
 // Top Level Sema Entry Points
 //===----------------------------------------------------------------------===//
@@ -6428,6 +6459,12 @@ static void ProcessDeclAttribute(Sema &S, Scope *scope, Decl *D,
     break;
   case AttributeList::AT_XRayLogArgs:
     handleXRayLogArgsAttr(S, D, AL);
+    break;
+  case AttributeList::AT_CMSThreadSafe:
+    handleCMSThreadSafeAttr(S, D, AL);
+    break;
+  case AttributeList::AT_CMSThreadGuard:
+    handleCMSThreadGuardAttr(S, D, AL);
     break;
   }
 }
