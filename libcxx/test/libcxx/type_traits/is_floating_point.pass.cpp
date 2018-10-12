@@ -17,8 +17,14 @@ int main() {
 #ifdef __clang__
   static_assert(std::is_floating_point<__fp16>::value, "");
 #endif
-#ifdef __FLT16_MANT_DIG__
+#ifdef __aarch64__
+  #ifdef __STDC_WANT_IEC_60559_TYPES_EXT__
   static_assert(std::is_floating_point<_Float16>::value, "");
+  #endif
+#else
+  #ifdef __FLT16_MANT_DIG__
+  static_assert(std::is_floating_point<_Float16>::value, "");
+  #endif
 #endif
   return 0;
 }
